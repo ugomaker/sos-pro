@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS Urgence Pro — Connexion</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root {
+    --red: #CC1A1A;
+    --text: #0D0D0D;
+    --muted: #888;
+    --bg: #F5F5F5;
+    --border: #e5e5e5;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .login-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px 28px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+  }
+  .title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: .04em;
+    text-align: center;
+    margin-bottom: 2px;
+  }
+  .subtitle {
+    font-size: .85rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  label {
+    display: block;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    margin-bottom: 18px;
+    font-family: 'Nunito', sans-serif;
+  }
+  input:focus { outline: none; border-color: var(--red); }
+  button {
+    width: 100%;
+    background: var(--text);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: .04em;
+    cursor: pointer;
+  }
+  button:disabled { opacity: .6; cursor: default; }
+  .error {
+    color: var(--red);
+    font-size: .85rem;
+    margin-top: 12px;
+    text-align: center;
+    min-height: 1.2em;
+  }
+  .dashboard {
+    display: none;
+    text-align: center;
+  }
+  .dashboard .welcome {
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .logout-link {
+    color: var(--muted);
+    font-size: .85rem;
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    margin-top: 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-box">
+
+  <div id="login-view">
+    <div class="title">SOS URGENCE</div>
+    <div class="subtitle">Espace Pro — Administration</div>
+
+    <label for="email">Email</label>
+    <input id="email" type="email" placeholder="vous@exemple.com" autocomplete="email">
+
+    <label for="password">Mot de passe</label>
+    <input id="password" type="password" placeholder="••••••••" autocomplete="current-password">
+
+    <button id="login-btn" onclick="seConnecter()">Se connecter</button>
+    <div id="login-error" class="error"></div>
+  </div>
+
+  <div id="dashboard-view" class="dashboard">
+    <div class="title">Bienvenue</div>
+    <div class="welcome" id="welcome-email"></div>
+    <div class="subtitle">Le tableau de bord arrive bientôt ici.</div>
+    <button class="logout-link" onclick="seDeconnecter()">Se déconnecter</button>
+  </div>
+
+</div>
+
+<script>
+  var SUPABASE_URL = 'https://tkeummevgbmfhavvkwsx.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_UfxUmV7bkzS4MJiojli5LQ_XEMe7-jd';
+  var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function showDashboard(email) {
+    document.getElementById('login-view').style.display = 'none';
+    document.getElementById('dashboard-view').style.display = 'block';
+    document.getElementById('welcome-email').textContent = email;
+  }
+
+  function showLogin() {
+    document.getElementById('login-view').style.display = 'block';
+    document.getElementById('dashboard-view').style.display = 'none';
+  }
+
+  function seConnecter() {
+    var email = document.getElementById('email').value.trim();
+    var password = document.getElementById('password').value;
+    var errorEl = document.getElementById('login-error');
+    var btn = document.getElementById('login-btn');
+    errorEl.textContent = '';
+
+    if (!email || !password) {
+      errorEl.textContent = 'Merci de remplir les deux champs.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Connexion...';
+
+    client.auth.signInWithPassword({ email: email, password: password })
+      .then(function(res) {
+        btn.disabled = false;
+        btn.textContent = 'Se connecter';
+        if (res.error) {
+          errorEl.textContent = 'Email ou mot de passe incorrect.';
+          return;
+        }
+        showDashboard(res.data.user.email);
+      })
+      .catch(function() {
+        btn.disabled = false;
+        btn.textContent = 'Se connecter';
+        errorEl.textContent = 'Erreur réseau, réessayez.';
+      });
+  }
+
+  function seDeconnecter() {
+    client.auth.signOut().then(function() { showLogin(); });
+  }
+
+  // Vérifie si une session existe déjà au chargement
+  client.auth.getSession().then(function(res) {
+    if (res.data.session) {
+      showDashboard(res.data.session.user.email);
+    }
+  });
+</script>
+
+</body>
+</html>
