@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOS Urgence Pro — Connexion</title>
+<title>SOS Urgence Pro — Administration</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
@@ -13,6 +13,7 @@
     --muted: #888;
     --bg: #F5F5F5;
     --border: #e5e5e5;
+    --green: #1C8C4B;
   }
   * { box-sizing: border-box; }
   body {
@@ -20,19 +21,17 @@
     font-family: 'Nunito', sans-serif;
     background: var(--bg);
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 20px;
   }
-  .login-box {
+  .wrap { max-width: 560px; margin: 0 auto; }
+  .login-box, .card {
     background: #fff;
     border-radius: 16px;
-    padding: 36px 28px;
-    width: 100%;
-    max-width: 380px;
-    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    padding: 28px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    margin-bottom: 20px;
   }
+  .login-box { max-width: 380px; margin: 60px auto; }
   .title {
     font-family: 'Oswald', sans-serif;
     font-size: 1.6rem;
@@ -42,75 +41,67 @@
     text-align: center;
     margin-bottom: 2px;
   }
-  .subtitle {
-    font-size: .85rem;
-    color: var(--muted);
-    text-align: center;
-    margin-bottom: 28px;
-  }
-  label {
-    display: block;
-    font-size: .8rem;
+  .subtitle { font-size: .85rem; color: var(--muted); text-align: center; margin-bottom: 24px; }
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: .9rem;
     font-weight: 700;
+    letter-spacing: .04em;
     color: var(--text);
-    margin-bottom: 6px;
+    margin-bottom: 14px;
   }
-  input {
+  label { display: block; font-size: .8rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  input, select {
     width: 100%;
     padding: 12px 14px;
     border: 1px solid var(--border);
     border-radius: 10px;
     font-size: 1rem;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
     font-family: 'Nunito', sans-serif;
+    background: #fff;
   }
-  input:focus { outline: none; border-color: var(--red); }
+  input:focus, select:focus { outline: none; border-color: var(--red); }
   button {
-    width: 100%;
     background: var(--text);
     color: #fff;
     border: none;
     border-radius: 10px;
-    padding: 14px;
+    padding: 13px;
     font-family: 'Oswald', sans-serif;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: .95rem;
     letter-spacing: .04em;
     cursor: pointer;
+    width: 100%;
   }
   button:disabled { opacity: .6; cursor: default; }
-  .error {
-    color: var(--red);
-    font-size: .85rem;
-    margin-top: 12px;
-    text-align: center;
-    min-height: 1.2em;
+  .error { color: var(--red); font-size: .85rem; margin-top: 10px; text-align: center; min-height: 1.2em; }
+  .success { color: var(--green); font-size: .85rem; margin-top: 10px; text-align: center; min-height: 1.2em; }
+  #app { display: none; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .topbar .who { font-size: .85rem; color: var(--muted); }
+  .logout-link { width: auto; background: none; color: var(--muted); text-decoration: underline; font-size: .8rem; padding: 0; }
+  .client-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
   }
-  .dashboard {
-    display: none;
-    text-align: center;
-  }
-  .dashboard .welcome {
-    font-size: 1rem;
-    color: var(--text);
-    margin-bottom: 20px;
-  }
-  .logout-link {
-    color: var(--muted);
-    font-size: .85rem;
-    text-decoration: underline;
-    cursor: pointer;
-    background: none;
-    border: none;
-    margin-top: 16px;
-  }
+  .client-row:last-child { border-bottom: none; }
+  .client-nom { font-weight: 700; font-size: .95rem; color: var(--text); }
+  .client-meta { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+  .client-count { font-family: 'Oswald', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--red); text-align: right; }
+  .client-count span { display: block; font-size: .65rem; color: var(--muted); font-family: 'Nunito', sans-serif; font-weight: 700; letter-spacing: .03em; }
+  .empty { font-size: .85rem; color: var(--muted); text-align: center; padding: 10px 0; }
+  .badge { display: inline-block; font-size: .68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; letter-spacing: .03em; }
+  .badge-entreprise { background: #eef2ff; color: #3b3bd6; }
+  .badge-mairie { background: #fff4e5; color: #b85c00; }
 </style>
 </head>
 <body>
 
-<div class="login-box">
+<div class="wrap">
 
-  <div id="login-view">
+  <div class="login-box" id="login-view">
     <div class="title">SOS URGENCE</div>
     <div class="subtitle">Espace Pro — Administration</div>
 
@@ -124,11 +115,34 @@
     <div id="login-error" class="error"></div>
   </div>
 
-  <div id="dashboard-view" class="dashboard">
-    <div class="title">Bienvenue</div>
-    <div class="welcome" id="welcome-email"></div>
-    <div class="subtitle">Le tableau de bord arrive bientôt ici.</div>
-    <button class="logout-link" onclick="seDeconnecter()">Se déconnecter</button>
+  <div id="app">
+
+    <div class="card topbar">
+      <div class="who">Connecté : <strong id="welcome-email"></strong></div>
+      <button class="logout-link" onclick="seDeconnecter()">Se déconnecter</button>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Créer un nouveau code</div>
+      <label for="new-nom">Nom de la structure</label>
+      <input id="new-nom" type="text" placeholder="Ex : Maki People">
+      <label for="new-type">Type</label>
+      <select id="new-type">
+        <option value="entreprise">Entreprise</option>
+        <option value="mairie">Mairie</option>
+      </select>
+      <label for="new-code">Code d'activation</label>
+      <input id="new-code" type="text" placeholder="Ex : MAKI2026">
+      <button id="create-btn" onclick="creerCode()">Créer le code</button>
+      <div id="create-error" class="error"></div>
+      <div id="create-success" class="success"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Clients</div>
+      <div id="clients-list"><div class="empty">Chargement...</div></div>
+    </div>
+
   </div>
 
 </div>
@@ -140,13 +154,14 @@
 
   function showDashboard(email) {
     document.getElementById('login-view').style.display = 'none';
-    document.getElementById('dashboard-view').style.display = 'block';
+    document.getElementById('app').style.display = 'block';
     document.getElementById('welcome-email').textContent = email;
+    chargerClients();
   }
 
   function showLogin() {
     document.getElementById('login-view').style.display = 'block';
-    document.getElementById('dashboard-view').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
   }
 
   function seConnecter() {
@@ -155,28 +170,16 @@
     var errorEl = document.getElementById('login-error');
     var btn = document.getElementById('login-btn');
     errorEl.textContent = '';
-
-    if (!email || !password) {
-      errorEl.textContent = 'Merci de remplir les deux champs.';
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'Connexion...';
-
+    if (!email || !password) { errorEl.textContent = 'Merci de remplir les deux champs.'; return; }
+    btn.disabled = true; btn.textContent = 'Connexion...';
     client.auth.signInWithPassword({ email: email, password: password })
       .then(function(res) {
-        btn.disabled = false;
-        btn.textContent = 'Se connecter';
-        if (res.error) {
-          errorEl.textContent = 'Email ou mot de passe incorrect.';
-          return;
-        }
+        btn.disabled = false; btn.textContent = 'Se connecter';
+        if (res.error) { errorEl.textContent = 'Email ou mot de passe incorrect.'; return; }
         showDashboard(res.data.user.email);
       })
       .catch(function() {
-        btn.disabled = false;
-        btn.textContent = 'Se connecter';
+        btn.disabled = false; btn.textContent = 'Se connecter';
         errorEl.textContent = 'Erreur réseau, réessayez.';
       });
   }
@@ -185,13 +188,48 @@
     client.auth.signOut().then(function() { showLogin(); });
   }
 
-  // Vérifie si une session existe déjà au chargement
-  client.auth.getSession().then(function(res) {
-    if (res.data.session) {
-      showDashboard(res.data.session.user.email);
-    }
-  });
-</script>
+  function creerCode() {
+    var nom = document.getElementById('new-nom').value.trim();
+    var type = document.getElementById('new-type').value;
+    var code = document.getElementById('new-code').value.trim().toUpperCase();
+    var errorEl = document.getElementById('create-error');
+    var successEl = document.getElementById('create-success');
+    var btn = document.getElementById('create-btn');
+    errorEl.textContent = ''; successEl.textContent = '';
 
-</body>
-</html>
+    if (!nom || !code) { errorEl.textContent = 'Merci de remplir tous les champs.'; return; }
+
+    btn.disabled = true; btn.textContent = 'Création...';
+    client.from('entreprises').insert({ nom: nom, type: type, code: code })
+      .then(function(res) {
+        btn.disabled = false; btn.textContent = 'Créer le code';
+        if (res.error) {
+          errorEl.textContent = res.error.message.indexOf('duplicate') > -1 ? 'Ce code existe déjà.' : 'Erreur lors de la création.';
+          return;
+        }
+        successEl.textContent = 'Code "' + code + '" créé !';
+        document.getElementById('new-nom').value = '';
+        document.getElementById('new-code').value = '';
+        chargerClients();
+      })
+      .catch(function() {
+        btn.disabled = false; btn.textContent = 'Créer le code';
+        errorEl.textContent = 'Erreur réseau, réessayez.';
+      });
+  }
+
+  function chargerClients() {
+    var listEl = document.getElementById('clients-list');
+    listEl.innerHTML = '<div class="empty">Chargement...</div>';
+
+    client.from('entreprises').select('*').order('created_at', { ascending: false })
+      .then(function(entRes) {
+        if (entRes.error || !entRes.data || entRes.data.length === 0) {
+          listEl.innerHTML = '<div class="empty">Aucun client pour le moment.</div>';
+          return;
+        }
+        var entreprises = entRes.data;
+
+        client.from('activations').select('code')
+          .then(function(actRes) {
+            var counts = {};
