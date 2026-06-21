@@ -233,3 +233,30 @@
         client.from('activations').select('code')
           .then(function(actRes) {
             var counts = {};
+            (actRes.data || []).forEach(function(a) {
+              counts[a.code] = (counts[a.code] || 0) + 1;
+            });
+
+            listEl.innerHTML = entreprises.map(function(e) {
+              var count = counts[e.code] || 0;
+              var badgeClass = e.type === 'mairie' ? 'badge-mairie' : 'badge-entreprise';
+              var badgeLabel = e.type === 'mairie' ? 'Mairie' : 'Entreprise';
+              return '<div class="client-row">' +
+                '<div>' +
+                  '<div class="client-nom">' + e.nom + '<span class="badge ' + badgeClass + '">' + badgeLabel + '</span></div>' +
+                  '<div class="client-meta">Code : ' + e.code + '</div>' +
+                '</div>' +
+                '<div class="client-count">' + count + '<span>activation' + (count === 1 ? '' : 's') + '</span></div>' +
+              '</div>';
+            }).join('');
+          });
+      });
+  }
+
+  client.auth.getSession().then(function(res) {
+    if (res.data.session) { showDashboard(res.data.session.user.email); }
+  });
+</script>
+
+</body>
+</html>
